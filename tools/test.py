@@ -74,7 +74,7 @@ def main():
         cfg, args.cfg, 'valid')
 
     logger.info(pprint.pformat(args))
-    logger.info(cfg)
+    # logger.info(cfg)
 
     # cudnn related setting
     cudnn.benchmark = cfg.CUDNN.BENCHMARK
@@ -84,10 +84,11 @@ def main():
     model = eval('models.'+cfg.MODEL.NAME+'.get_pose_net')(
         cfg, is_train=False
     )
-
+    # print(cfg.TEST)
     if cfg.TEST.MODEL_FILE:
         logger.info('=> loading model from {}'.format(cfg.TEST.MODEL_FILE))
-        model.load_state_dict(torch.load(cfg.TEST.MODEL_FILE), strict=False)
+        model.load_state_dict(torch.load(
+            cfg.TEST.MODEL_FILE, map_location={'cuda:0': 'cpu'}), strict = False)
     else:
         model_state_file = os.path.join(
             final_output_dir, 'final_state.pth'
@@ -95,12 +96,12 @@ def main():
         logger.info('=> loading model from {}'.format(model_state_file))
         model.load_state_dict(torch.load(model_state_file))
 
-    model = torch.nn.DataParallel(model, device_ids=cfg.GPUS).cuda()
+    model = torch.nn.DataParallel(model, device_ids=cfg.GPUS)#.cuda()
 
     # define loss function (criterion) and optimizer
     criterion = JointsMSELoss(
         use_target_weight=cfg.LOSS.USE_TARGET_WEIGHT
-    ).cuda()
+    )#.cuda()
 
     # Data loading code
     normalize = transforms.Normalize(
@@ -124,7 +125,6 @@ def main():
     # evaluate on validation set
     validate(cfg, valid_loader, valid_dataset, model, criterion,
              final_output_dir, tb_log_dir)
-
 
 if __name__ == '__main__':
     main()
