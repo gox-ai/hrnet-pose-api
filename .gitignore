@@ -87,8 +87,8 @@ target/
 lib/pycocotools/_mask.c
 lib/nms/cpu_nms.c
 
-output/*
 # models/*
+# output/*
 log/*
 data/*
 external/
