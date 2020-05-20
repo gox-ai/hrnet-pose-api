@@ -13,7 +13,7 @@ gen
 *.un~
 Session.vim
 .netrwhist
-*~
+# *~
 
 ### IPythonNotebook template
 # Temporary data
